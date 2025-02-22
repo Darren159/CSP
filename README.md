@@ -1,6 +1,56 @@
+## Case Study 1
+### Issue
+The issue is caused by **directly mutating the state**:
+```tsx
+const updateAge = () => {
+    user.age = 26
+    setUser(user)
+};
+``` 
+According to the React documentation: 
+> In React, state is considered read-only, so you should replace it rather than mutate your existing objects. 
+
+In this case, since `user` is modified directly, `setUser(user)` does not detect any change, and React does not re-render the component.
+
+### Solution
+Instead, **create a new object** to replace the original `user`.
+```tsx
+const updateAge = () => {
+    setUser(prevUser => ({ ...prevUser, age: 26 }));
+};
+```
+`{ ...prevUser, age: 26 }` creates a **new object**, so React detects the change and re-renders the component.
+
+## Case Study 2
+### Issue
+The issue is caused by **direct mutation of the object** inside the state array. The same reference (`users`) is passed to `setUsers`, so React **does not detect a state change**.
+```tsx
+const updateUser = (id, newName) => {
+    const user = users.find(u => u.id === id)
+    user.name = newName
+    setUsers(users)
+};
+```
+**React determines if state has changed based on object identity** (`===`). Since `setUsers(users)` keeps the same reference, React assumes nothing changed (because objects are compared by reference, not by value) and skips rendering. 
+
+### Solution
+Use `map()` to **return a new array** and ensure state immutability:
+```tsx
+const updateUser = (id, newName) => {
+    setUsers(prevUsers =>
+        prevUsers.map(user =>
+            user.id === id ? { ...user, name: newName } : user
+        )
+    );
+};
+```
+`map()` creates a **new array**, ensuring React detects the change. `{ ...user, name: newName }` creates a **new object**, avoiding mutation.
+
+##
+Case Study 3
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+## Running the App locally
 
 First, run the development server:
 
@@ -14,23 +64,41 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+To create a production build:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+# or
+yarn build
+# or
+pnpm build
+# or
+bun build
+```
 
-## Learn More
+To start the production build:
+```bash
+npm run start
+# or
+yarn start
+# or
+pnpm start
+# or
+bun start
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Delete Functionality
+A **"Delete"** button is added next to each user's name. When this button is pressed:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. The `deleteUser` function is triggered, receiving the `id` of the user to be removed.
+2. Inside `deleteUser`, the `setUsers` function is called with a **filtered list**, excluding the user with the given `id`.
+3. Since `filter()` **returns a new array**, React detects the state change and re-renders the component.
+4. The deleted user is removed from the UI instantly without requiring a page refresh.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```tsx
+const deleteUser = (id: number) => {
+    setUsers(prevUsers => prevUsers.filter(user => user.id !== id));
+};
+```
