@@ -46,8 +46,7 @@ const updateUser = (id, newName) => {
 ```
 `map()` creates a **new array**, ensuring React detects the change. `{ ...user, name: newName }` creates a **new object**, avoiding mutation.
 
-##
-Case Study 3
+## Case Study 3
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Running the App locally
