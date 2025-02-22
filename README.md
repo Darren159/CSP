@@ -49,7 +49,7 @@ const updateUser = (id, newName) => {
 ## Case Study 3
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Running the App locally
+### Running the App locally
 
 First, run the development server:
 
@@ -87,6 +87,8 @@ pnpm start
 # or
 bun start
 ```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
 ### Delete Functionality
 A **"Delete"** button is added next to each user's name. When this button is pressed:
